@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>北京市初中体育与健康知识笔试刷题系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "微软雅黑", system-ui, sans-serif;
+        }
+        body {
+            max-width: 750px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background-color: #f5f7fa;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            font-size: 22px;
+            color: #222;
+            margin-bottom: 10px;
+        }
+        .header p {
+            color: #666;
+            font-size: 15px;
+        }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+        .question-title {
+            font-size: 19px;
+            font-weight: bold;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            color: #222;
+        }
+        .option-btn {
+            display: block;
+            width: 100%;
+            padding: 15px 20px;
+            margin-bottom: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            background: white;
+            font-size: 17px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .option-btn:hover:not(:disabled) {
+            border-color: #409eff;
+            background-color: #f0f7ff;
+        }
+        .option-btn:disabled {
+            cursor: not-allowed;
+        }
+        .correct {
+            border-color: #67c23a !important;
+            background-color: #f0f9eb !important;
+        }
+        .wrong {
+            border-color: #f56c6c !important;
+            background-color: #fef0f0 !important;
+        }
+        .result-box {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .result-correct {
+            background-color: #f0f9eb;
+            border: 1px solid #67c23a;
+            color: #67c23a;
+        }
+        .result-wrong {
+            background-color: #fef0f0;
+            border: 1px solid #f56c6c;
+            color: #f56c6c;
+        }
+        .analysis-box {
+            margin-top: 15px;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #f5f7fa;
+            line-height: 1.6;
+            font-size: 16px;
+            display: none;
+            color: #333;
+        }
+        .next-btn {
+            margin-top: 25px;
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            background-color: #409eff;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            display: none;
+        }
+        .next-btn:hover {
+            background-color: #337ecc;
+        }
+        .restart-btn {
+            background-color: #67c23a;
+        }
+        .restart-btn:hover {
+            background-color: #529b2e;
+        }
+        .empty-tip {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>北京市初中体育与健康知识笔试刷题系统</h1>
+        <p>逐题作答 | 即时判分 | 趣味解析 | 错题复盘</p>
+    </div>
+
+    <div class="card" id="cardBox">
+        <div class="question-title" id="questionTitle"></div>
+        <div id="optionsBox"></div>
+        <div class="result-box" id="resultBox"></div>
+        <div class="analysis-box" id="analysisBox"></div>
+        <button class="next-btn" id="nextBtn">下一题</button>
+    </div>
+
+    <!-- 脚本放在body最底部，彻底解决DOM加载顺序问题 -->
+    <script>
+        // ===================== 题库配置区：替换成你的题目，严格按照格式填写 =====================
+        // 注意：所有标点符号必须是英文标点！！！引号、逗号、大括号都不能用中文的
+        const questions = [
+            {
+                title: "在中长跑运动中，正确的呼吸方法是？",
+                options: ["A. 全程用嘴呼吸", "B. 两步一呼、两步一吸，鼻吸嘴呼", "C. 一步一呼、一步一吸", "D. 全程憋气"],
+                answer: "B",
+                analysis: "✅ 恭喜你选对啦！这道题是体育笔试超高频考点，记住这个口诀：中长跑，两步两呼，鼻吸嘴呼。<br>👉 原理很简单：你跑1000/800米的时候，耗氧量特别大，一步一呼吸太急，容易岔气；全程用嘴/憋气，很快就会嗓子干、腿发软。<br>👉 正确的节奏是：跑两步用鼻子吸气，再跑两步用嘴慢慢呼气，既能吸够氧气，又能稳住跑步节奏，还不会岔气，考试的时候这么跑，成绩都能提一截！<br>❌ 易错坑提醒：选项A全程用嘴呼吸，会让冷空气直接冲嗓子，跑半圈就咳嗽；选项C节奏太快，很容易呼吸紊乱，越跑越累；D就更不用说啦，憋气跑根本坚持不下来！"
+            },
+            {
+                title: "立定跳远落地时，哪个动作是正确的？",
+                options: ["A. 落地后向后坐倒", "B. 双脚落地后，屈膝缓冲，身体向前倾", "C. 单脚先落地", "D. 落地后双手向后撑地"],
+                answer: "B",
+                analysis: "✅ 答对啦！立定跳远的核心得分点，全在落地这一下！<br>👉 记住口诀：一蹲二摆三跳起，落地缓冲往前倾。<br>👉 原理：落地屈膝缓冲，能把落地的冲击力卸掉，不会崴脚；身体向前倾，能保证你的成绩是按脚后跟落点算，不会因为向后倒、手撑地，把成绩算到后面的落点，白白丢分。<br>❌ 易错坑：A、D向后坐/撑地，成绩会按手和屁股的落点算，直接少十几厘米；C单脚落地不仅犯规没成绩，还特别容易崴脚，考试绝对不能这么做！"
+            },
+            {
+                title: "运动后大量出汗，最适合补充的饮品是？",
+                options: ["A. 冰可乐", "B. 冰水", "C. 温的淡盐水", "D. 纯牛奶"],
+                answer: "C",
+                analysis: "✅ 完全正确！这道题几乎年年考，记住：运动后补水，温的淡盐水永远是首选！<br>👉 原理：你运动出汗的时候，不光丢了水分，还带走了身体里的盐分（电解质），只喝白水会越喝越没力气，甚至抽筋；冰饮会刺激肠胃，刚跑完步肠胃蠕动快，喝冰的很容易肚子疼、拉肚子。<br>👉 考试小贴士：体测完喝一小杯温的淡盐水，比喝任何饮料都恢复得快，还不会不舒服。<br>❌ 易错坑：冰可乐、冰水是大忌，不仅不补水，还会伤肠胃；牛奶补充营养可以，但不能用来快速补水，运动后喝还容易胀气。"
+            }
+            // 新增题目：在上面这道题的大括号后面加英文逗号，然后复制上面的格式粘贴，不要漏标点
+        ];
+        // ========================================================================================
+
+        // 全局变量
+        let currentIndex = 0;
+        let selected = false;
+        const cardBox = document.getElementById("cardBox");
+        const questionTitle = document.getElementById("questionTitle");
+        const optionsBox = document.getElementById("optionsBox");
+        const resultBox = document.getElementById("resultBox");
+        const analysisBox = document.getElementById("analysisBox");
+        const nextBtn = document.getElementById("nextBtn");
+
+        // 页面加载完成后初始化
+        window.onload = function() {
+            // 容错处理：题库为空时提示
+            if(!questions || questions.length === 0) {
+                cardBox.innerHTML = '<div class="empty-tip">⚠️ 题库为空，请检查代码中的题目配置</div>';
+                alert("错误：题库为空，请检查代码里的questions数组是否正确填写");
+                return;
+            }
+            // 正常加载第一题
+            loadQuestion(currentIndex);
+        };
+
+        // 加载题目核心函数
+        function loadQuestion(index) {
+            // 重置状态
+            selected = false;
+            const currentQuestion = questions[index];
+            
+            // 填充题干
+            questionTitle.innerText = `第${index+1}题：${currentQuestion.title}`;
+            // 清空选项区
+            optionsBox.innerHTML = "";
+            
+            // 循环生成选项按钮
+            currentQuestion.options.forEach((option) => {
+                const btn = document.createElement("button");
+                btn.className = "option-btn";
+                btn.innerText = option;
+                // 绑定点击判分事件
+                btn.onclick = function() {
+                    checkAnswer(option, btn, currentQuestion.answer, currentQuestion.analysis);
+                };
+                optionsBox.appendChild(btn);
+            });
+
+            // 重置结果和解析区
+            resultBox.style.display = "none";
+            analysisBox.style.display = "none";
+            nextBtn.style.display = "none";
+        }
+
+        // 判分+显示解析函数
+        function checkAnswer(selectedOption, selectedBtn, correctAnswer, analysis) {
+            // 防止重复点击
+            if (selected) return;
+            selected = true;
+
+            // 禁用所有选项按钮
+            const allBtns = document.querySelectorAll(".option-btn");
+            allBtns.forEach(btn => btn.disabled = true);
+
+            // 判断对错
+            const isCorrect = selectedOption.trim().startsWith(correctAnswer.trim());
+            
+            // 高亮选项
+            if (isCorrect) {
+                selectedBtn.classList.add("correct");
+                resultBox.className = "result-box result-correct";
+                resultBox.innerText = `✅ 回答正确！正确答案：${correctAnswer}`;
+            } else {
+                selectedBtn.classList.add("wrong");
+                resultBox.className = "result-box result-wrong";
+                resultBox.innerText = `❌ 回答错误！正确答案：${correctAnswer}`;
+                // 高亮正确选项
+                allBtns.forEach(btn => {
+                    if (btn.innerText.trim().startsWith(correctAnswer.trim())) {
+                        btn.classList.add("correct");
+                    }
+                });
+            }
+
+            // 显示结果和解析
+            resultBox.style.display = "block";
+            analysisBox.innerHTML = analysis;
+            analysisBox.style.display = "block";
+            
+            // 处理下一题/重新开始按钮
+            if (currentIndex === questions.length - 1) {
+                nextBtn.innerText = "重新开始刷题";
+                nextBtn.classList.add("restart-btn");
+                nextBtn.onclick = function() {
+                    currentIndex = 0;
+                    nextBtn.classList.remove("restart-btn");
+                    nextBtn.innerText = "下一题";
+                    loadQuestion(currentIndex);
+                };
+            } else {
+                nextBtn.onclick = function() {
+                    currentIndex++;
+                    loadQuestion(currentIndex);
+                };
+            }
+            nextBtn.style.display = "block";
+        }
+    </script>
+</body>
+</html>
