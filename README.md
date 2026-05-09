@@ -11,6 +11,20 @@
 
 **在线访问**：https://luyt12.github.io/beijing-pe-sports-quiz
 
+## 📸 界面预览
+
+### 答题界面
+
+![答题界面](screenshots/quiz-screenshot-1.jpg)
+
+选择答案后即时显示对错，正确答案高亮显示。
+
+### 解析界面
+
+![解析界面](screenshots/quiz-screenshot-2.jpg)
+
+每道题配有详细解析（原理说明 + 易错坑点提醒），帮助理解记忆。
+
 ## ✨ 功能特点
 
 - 📝 **逐题作答** - 一次只显示一道题，专注学习
