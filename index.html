@@ -121,6 +121,39 @@
         .restart-btn:hover {
             background-color: #529b2e;
         }
+        .prev-btn {
+            margin-top: 15px;
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            background-color: #909399;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .prev-btn:hover {
+            background-color: #7a7a7a;
+        }
+        .prev-btn:active {
+            transform: scale(0.98);
+        }
+        .quick-nav {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+        }
+        .quick-nav a {
+            margin: 0 5px;
+            color: #409eff;
+            text-decoration: none;
+        }
+        .quick-nav a:hover {
+            text-decoration: underline;
+        }
         .empty-tip {
             text-align: center;
             padding: 40px 20px;
@@ -141,6 +174,8 @@
         <div class="result-box" id="resultBox"></div>
         <div class="analysis-box" id="analysisBox"></div>
         <button class="next-btn" id="nextBtn">下一题</button>
+        <button class="prev-btn" id="prevBtn" style="display:none;">上一题</button>
+        <div class="quick-nav" id="quickNav"></div>
     </div>
 
     <!-- 脚本放在body最底部，彻底解决DOM加载顺序问题 -->
@@ -1362,6 +1397,31 @@
         const resultBox = document.getElementById("resultBox");
         const analysisBox = document.getElementById("analysisBox");
         const nextBtn = document.getElementById("nextBtn");
+        const prevBtn = document.getElementById("prevBtn");
+        const quickNav = document.getElementById("quickNav");
+
+        // 渲染快速跳转导航（每10题一个链接）
+        function renderQuickNav() {
+            if (!questions || questions.length === 0) return;
+            const total = questions.length;
+            let html = '<span style="margin-right:8px;">快速跳转：</span>';
+            for (let i = 10; i <= total; i += 10) {
+                const isCurrent = (currentIndex + 1) === i;
+                const style = isCurrent ? 'font-weight:bold;color:#333;' : '';
+                html += '<a href="javascript:void(0)" onclick="jumpTo(' + (i-1) + ')">' + '第' + i + '题</a>';
+            }
+            quickNav.innerHTML = html;
+        }
+
+        // 跳转到指定题号
+        function jumpTo(index) {
+            if (index >= 0 && index < questions.length) {
+                currentIndex = index;
+                selected = false;
+                loadQuestion(currentIndex);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
 
         // 页面加载完成后初始化
         window.onload = function() {
@@ -1402,6 +1462,8 @@
             resultBox.style.display = "none";
             analysisBox.style.display = "none";
             nextBtn.style.display = "none";
+            prevBtn.style.display = (currentIndex === 0) ? "none" : "block";
+            renderQuickNav();
         }
 
         // 判分+显示解析函数
@@ -1447,6 +1509,7 @@
                     currentIndex = 0;
                     nextBtn.classList.remove("restart-btn");
                     nextBtn.innerText = "下一题";
+                    prevBtn.style.display = "none";
                     loadQuestion(currentIndex);
                 };
             } else {
@@ -1455,6 +1518,14 @@
                     loadQuestion(currentIndex);
                 };
             }
+            prevBtn.onclick = function() {
+                if (currentIndex > 0) {
+                    currentIndex--;
+                    loadQuestion(currentIndex);
+                }
+            };
+            prevBtn.style.display = (currentIndex === 0) ? "none" : "block";
+            renderQuickNav();
             nextBtn.style.display = "block";
         }
     </script>
